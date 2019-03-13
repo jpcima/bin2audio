@@ -1,7 +1,5 @@
 /*
 Convertir fichier binaire en fichier WAVE.
-
-  Construction :    g++ -O2 -g -o sndfile sndfile.cc -lsndfile
 */
 
 #include <sndfile.hh>
