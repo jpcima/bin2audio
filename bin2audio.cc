@@ -10,8 +10,8 @@ void print_usage(const char *progname)
 {
     fprintf(stderr,
             u8"Usage: %s -i <fichier-entrée> -o <fichier-sortie>\n"
-              "          [-s taux]  : définit le taux déchantillonnage du fichier de sortie\n"
-              "          [-b]       : pour effecture une lecture en big-endian\n",
+              "          [-s taux]  : définit le taux d'échantillonnage du fichier de sortie\n"
+              "          [-b]       : pour effectuer une lecture en big-endian\n",
             progname);
 }
 
@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
             littleendian = false;
             break;
         default:
+            print_usage(argv[0]);
             return 1;
         }
     }
