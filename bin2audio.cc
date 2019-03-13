@@ -68,9 +68,6 @@ int main(int argc, char *argv[])
         else
             echantillon = ((octets[1]) | (octets[0] << 8));
 
-        // sample = (((uint16_t)sample << 8) |
-        //     ((uint16_t)sample >> 8)); // si on échanger les octets haut et bas
-
         snd.write((int16_t *)&echantillon, 1); // écriture de l'échantillon
     }
 
