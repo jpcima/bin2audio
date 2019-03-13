@@ -12,7 +12,8 @@ void print_usage(const char *progname)
 {
     fprintf(stderr,
             u8"Usage: %s -i <fichier-entrée> -o <fichier-sortie>\n"
-              "          [-s taux-échantillonnage]\n",
+              "          [-s taux]  : définit le taux déchantillonnage du fichier de sortie\n"
+              "          [-b]       : pour effecture une lecture en big-endian\n",
             progname);
 }
 
@@ -21,8 +22,9 @@ int main(int argc, char *argv[])
     const char *inputfile = nullptr;
     const char *outputfile = nullptr;
     float samplerate = 44100;
+    bool littleendian = true;
 
-    for (int c; (c = getopt(argc, argv, "i:o:s:")) != -1;) {
+    for (int c; (c = getopt(argc, argv, "i:o:s:b")) != -1;) {
         switch (c) {
         case 'i':
             inputfile = optarg;
@@ -32,6 +34,9 @@ int main(int argc, char *argv[])
             break;
         case 's':
             samplerate = atof(optarg);
+            break;
+        case 'b':
+            littleendian = false;
             break;
         default:
             return 1;
@@ -56,13 +61,19 @@ int main(int argc, char *argv[])
     }
 
     // on récupère des échantillons 16 bits
-    int16_t sample;
-    while (fread(&sample, 1, sizeof(sample), fh) == sizeof(sample)) {
+    uint8_t octets[2];
+    while (fread(octets, 1, 2, fh) == 2) {
+        uint16_t echantillon;
 
-        sample = (((uint16_t)sample << 8) |
-            ((uint16_t)sample >> 8)); // si on échanger les octets haut et bas
+        if (littleendian)
+            echantillon = ((octets[0]) | (octets[1] << 8));
+        else
+            echantillon = ((octets[1]) | (octets[0] << 8));
 
-        snd.write(&sample, 1); // écriture de l'échantillon
+        // sample = (((uint16_t)sample << 8) |
+        //     ((uint16_t)sample >> 8)); // si on échanger les octets haut et bas
+
+        snd.write((int16_t *)&echantillon, 1); // écriture de l'échantillon
     }
 
     snd.writeSync();
